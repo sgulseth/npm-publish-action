@@ -51,8 +51,10 @@ function placeholderEnv(name, defaultValue) {
   }
 }
 
-async function processDirectory(dir, config, commits) {
-  const packageFile = join(dir, "package.json");
+async function processDirectory(repoDir, config, commits) {
+  const packageDir = join(repoDir, process.env.PACKAGE_DIR || '')
+
+  const packageFile = join(packageDir, "package.json");
   const packageObj = await readJson(packageFile).catch(() =>
     Promise.reject(
       new NeutralExitError(`package file not found: ${packageFile}`)
@@ -67,8 +69,8 @@ async function processDirectory(dir, config, commits) {
 
   checkCommit(config, commits, version);
 
-  await createTag(dir, config, version);
-  await publishPackage(dir, config, version);
+  await createTag(repoDir, config, version);
+  await publishPackage(packageDir, config, version);
 
   console.log("Done.");
 }
